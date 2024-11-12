@@ -15,7 +15,7 @@ export default {
     require('daisyui'),
   ],
   daisyui: {
-    themes: ["cupcake", "dracula"], // Inclua os temas que deseja usar
+    themes: ["cupcake", "dracula"],
   },
 }
 

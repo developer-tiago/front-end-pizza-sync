@@ -3,7 +3,7 @@
     <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col">
       <!-- Navbar -->
-      <div class="navbar bg-base-300 w-full">
+      <div class="navbar container mx-auto bg-base-100 w-full">
         <div class="flex-none">
           <label
             for="my-drawer-3"
@@ -25,77 +25,63 @@
             </svg>
           </label>
         </div>
-        <div class="mx-2 flex-1 px-2 font-bold text-lg">Meal Sync</div>
-        <ul class="menu menu-horizontal">
+        <div class="w-full flex items-center justify-between">
           <!-- Navbar menu content here -->
-          <li>
-            <router-link to="/" title="Home">
-              <Icon name="material-symbols:house-outline" class="w-5 h-5" />
-            </router-link>
-          </li>
-          <li class="ms-2">
-            <router-link to="/environments" title="Ambientes">
-              <Icon name="ic:outline-door-front" class="w-5 h-5" />
-            </router-link>
-          </li>
-          <li class="ms-2">
-            <router-link to="/products" title="Produtos">
-              <Icon
-                name="material-symbols:production-quantity-limits-outline-rounded"
-                class="w-5 h-5"
+          <InputSearchClient />
+          <div class="flex gap-2">
+            <label class="grid cursor-pointer place-items-center">
+              <input
+                type="checkbox"
+                value="dracula"
+                class="toggle theme-controller bg-base-content col-span-2 col-start-1 row-start-1"
+                @change="toggleTheme"
+                :checked="currentTheme === 'dracula'"
               />
-            </router-link>
-          </li>
-          <li class="me-2">
-            <router-link to="/categories" title="Categorias">
-              <Icon name="material-symbols:category-outline" class="w-5 h-5" />
-            </router-link>
-          </li>
-          <label class="grid cursor-pointer place-items-center" title="Tema">
-            <input
-              type="checkbox"
-              value="dracula"
-              class="toggle theme-controller bg-base-content col-span-2 col-start-1 row-start-1"
-              @change="toggleTheme"
-              :checked="currentTheme === 'dracula'"
-            />
-            <svg
-              class="stroke-base-100 fill-base-100 col-start-1 row-start-1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="12" cy="12" r="5" />
-              <path
-                d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
-              />
-            </svg>
-            <svg
-              class="stroke-base-100 fill-base-100 col-start-2 row-start-1"
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-            </svg>
-          </label>
-        </ul>
+              <svg
+                class="stroke-base-100 fill-base-100 col-start-1 row-start-1"
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <circle cx="12" cy="12" r="5" />
+                <path
+                  d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"
+                />
+              </svg>
+              <svg
+                class="stroke-base-100 fill-base-100 col-start-2 row-start-1"
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"
+                ></path>
+              </svg>
+            </label>
+            <div class="avatar cursor-pointer">
+              <div class="w-10 rounded-full">
+                <img src="../public/avatar.jpeg" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <!-- Page content here -->
       <div class="container mx-auto">
-        <div class="card bg-base-100 shadow-2xl p-4 m-4">
+        <div class="card bg-base-100 shadow-xl p-4">
           <NuxtPage />
         </div>
       </div>
@@ -106,50 +92,59 @@
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu bg-base-200 min-h-full w-80 p-4 gap-2">
+      <ul class="menu bg-base-200 min-h-full w-20 p-4 gap-2">
         <!-- Sidebar content here -->
         <li>
-          <router-link
-            class="text-md font-bold"
+          <div
+            class="tooltip tooltip-right"
             :class="{ active: $route.path === '/' }"
-            to="/"
+            data-tip="Home"
+            @click="redirectPage('/')"
           >
-            <Icon name="material-symbols:house-outline" class="w-6 h-6" />
-            Home
-          </router-link>
+            <Icon name="ic:outline-home" class="w-6 h-6" />
+          </div>
         </li>
         <li>
-          <router-link
-            class="text-md font-bold"
+          <div
+            class="tooltip tooltip-right"
+            :class="{ active: $route.path === '/clients' }"
+            data-tip="Clientes"
+            @click="redirectPage('/clients')"
+          >
+            <Icon name="ic:outline-person" class="w-6 h-6" />
+          </div>
+        </li>
+
+        <li>
+          <div
+            class="tooltip tooltip-right"
             :class="{ active: $route.path === '/products' }"
-            to="/products"
+            data-tip="Produtos"
+            @click="redirectPage('/products')"
           >
-            <Icon
-              name="material-symbols:production-quantity-limits-outline-rounded"
-              class="w-6 h-6"
-            />
-            Produtos
-          </router-link>
+            <Icon name="ic:outline-shopping-cart" class="w-6 h-6" />
+          </div>
         </li>
         <li>
-          <router-link
-            class="text-md font-bold"
+          <div
+            class="tooltip tooltip-right"
             :class="{ active: $route.path === '/categories' }"
-            to="/categories"
+            data-tip="Categorias"
+            @click="redirectPage('/categories')"
           >
-            <Icon name="material-symbols:category-outline" class="w-6 h-6" />
-            Categorias</router-link
-          >
+            <Icon name="ic:outline-category" class="w-6 h-6" />
+          </div>
         </li>
+
         <li>
-          <router-link
-            class="text-md font-bold"
+          <div
+            class="tooltip tooltip-right"
             :class="{ active: $route.path === '/environments' }"
-            to="/environments"
+            data-tip="Ambientes"
+            @click="redirectPage('/environments')"
           >
             <Icon name="ic:outline-door-front" class="w-6 h-6" />
-            Ambientes</router-link
-          >
+          </div>
         </li>
       </ul>
     </div>
@@ -157,7 +152,11 @@
 </template>
 
 <script setup lang="ts">
+import InputSearchClient from "@/components/InputSearchClient.vue";
 import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 // Define o tema como uma ref reativa tipada como string
 const currentTheme = ref<string>("cupcake");
@@ -178,6 +177,10 @@ const loadTheme = () => {
 const applyTheme = () => {
   document.documentElement.setAttribute("data-theme", currentTheme.value);
   localStorage.setItem("theme", currentTheme.value);
+};
+
+const redirectPage = (path: string) => {
+  router.push(path);
 };
 
 // Executa a função `loadTheme` quando o componente é montado
