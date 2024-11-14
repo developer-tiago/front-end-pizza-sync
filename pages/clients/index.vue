@@ -14,21 +14,28 @@
       <thead>
         <tr>
           <th>Name</th>
-          <th></th>
+          <th>Endereço</th>
+          <th>Telefone</th>
         </tr>
       </thead>
       <tbody v-if="clients.length > 0">
         <tr v-for="client in clients" :key="client.id">
           <td>{{ client.name }}</td>
-
+          <td>
+            {{ getAddress(client.street, client.number, client.neighborhood) }}
+          </td>
+          <td>{{ getPhone(client.phone) }}</td>
           <td>
             <div class="flex justify-end gap-2">
-              <button class="btn btn-square btn-outline btn-xs">
+              <button
+                class="btn btn-square btn-outline btn-xs"
+                @click="editClient(client)"
+              >
                 <Icon name="ic:twotone-edit" />
               </button>
               <button
                 class="btn btn-square btn-outline btn-xs"
-                @click="openDeleteModal(category)"
+                @click="openDeleteModal(client)"
               >
                 <Icon name="ic:twotone-delete" />
               </button>
@@ -39,7 +46,7 @@
       <tbody v-else>
         <tr>
           <td colspan="100%" class="text-center py-8">
-            Nenhuma categoria encontrada
+            Nenhuma cliente encontrado
           </td>
         </tr>
       </tbody>
@@ -51,7 +58,12 @@
       @goToPage="goToPage($event)"
     />
 
-
+    <ModalAddClient
+      v-if="modal.create"
+      :openModal="modal.create"
+      @close="modal.create = false"
+      @created="clientCreated()"
+    />
 
     <ModalDelete
       v-if="modal.delete"
@@ -71,6 +83,7 @@
 </template>
 
 <script>
+import ModalAddClient from "./components/ModalAddClient.vue";
 import ModalDelete from "@/components/ModalDelete.vue";
 import Pagination from "@/components/Pagination.vue";
 import AlertSuccess from "@/components/AlertSuccess.vue";
@@ -78,6 +91,7 @@ import ClientApi from "@/server/clients";
 
 export default {
   components: {
+    ModalAddClient,
     ModalDelete,
     Pagination,
     AlertSuccess,
@@ -145,33 +159,33 @@ export default {
       }
     },
 
-    categoryCreated() {
+    clientCreated() {
       this.loadClients();
 
-      this.alert.text = "Categoria adicionada com sucesso!";
+      this.alert.text = "Cliente adicionado com sucesso!";
       this.alert.type = "success";
       this.alert.show = true;
     },
 
-    openDeleteModal(category) {
+    openDeleteModal(client) {
       this.modalSelected = {
-        title: "Excluir categoria",
-        confirmationQuestion: `Deseja realmente excluir a categoria <b>${category.name}</b>?`,
-        id: category.id,
+        title: "Excluir cliente",
+        confirmationQuestion: `Deseja realmente excluir o cliente <b>${client.name}</b>?`,
+        id: client.id,
       };
 
       this.modal.delete = true;
     },
 
     async deleteCategory(id) {
-      await CategoryApi.delete(id)
+      await ClientApi.delete(id)
         .then(() => {
           this.loadClients();
 
           this.modal.delete = false;
 
           this.alert = {
-            text: "Categoria excluída com sucesso!",
+            text: "Cliente excluído com sucesso!",
             type: "success",
             show: true,
           };
@@ -179,6 +193,50 @@ export default {
         .catch((error) => {
           console.log(error);
         });
+    },
+
+    getPhone(phone) {
+      if (!phone) return "";
+      // Verifica se o número possui DDD e separa o DDD e o restante do número
+      const ddd = phone.slice(0, 2);
+      const numeroPrincipal = phone.slice(2);
+
+      // Formata o número principal dependendo do comprimento
+      let numeroFormatado;
+      if (numeroPrincipal.length === 9) {
+        // Para números com 9 dígitos (celulares), formata como (xxxxx-xxxx)
+        numeroFormatado = `${numeroPrincipal.slice(
+          0,
+          5
+        )}-${numeroPrincipal.slice(5)}`;
+      } else if (numeroPrincipal.length === 8) {
+        // Para números com 8 dígitos (fixos), formata como (xxxx-xxxx)
+        numeroFormatado = `${numeroPrincipal.slice(
+          0,
+          4
+        )}-${numeroPrincipal.slice(4)}`;
+      } else {
+        return "Número de telefone inválido";
+      }
+
+      // Retorna o número completo com prefixo, DDD e número formatado
+      return `(${ddd}) ${numeroFormatado}`;
+    },
+
+    getAddress(address, number, neighborhood) {
+      if (address && number && neighborhood) {
+        return `${address}, ${number} - ${neighborhood}`;
+      }
+
+      if (address && number) {
+        return `${address}, ${number}`;
+      }
+
+      if (address && neighborhood) {
+        return `${address} - ${neighborhood}`;
+      }
+
+      return address;
     },
   },
 };

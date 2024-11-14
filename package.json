@@ -16,7 +16,8 @@
     "nuxt": "^3.14.159",
     "v-money3": "^3.24.1",
     "vue": "latest",
-    "vue-router": "latest"
+    "vue-router": "latest",
+    "vue-tel-input": "^9.2.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

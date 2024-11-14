@@ -92,8 +92,11 @@
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu bg-base-200 min-h-full w-20 p-4 gap-2">
+      <ul class="menu bg-base-200 min-h-full w-20 p-3 gap-2">
         <!-- Sidebar content here -->
+         <li @click="redirectPage('/')">
+          <img class="py-1 px-2" src="../public/pizza.png" alt="">
+         </li>
         <li>
           <div
             class="tooltip tooltip-right"
