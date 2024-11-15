@@ -1,10 +1,10 @@
 <template>
-  <div ref="inputSearch" class="ms-2 relative max-w-60 w-full">
+  <div ref="inputSearch" class="ms-2 relative max-w-72 w-full">
     <input
       class="input input-bordered input-sm w-full"
       v-model="search"
       type="text"
-      placeholder="Buscar cliente"
+      placeholder="Buscar cliente..."
       @keydown.enter="searchClient"
     />
     <ul
@@ -20,9 +20,9 @@
       >
         <p class="text-sm">{{ client.name }}</p>
         <p class="text-xs text-gray-500">
-          {{ client.street }}, {{ client.number }}
+          {{ getAddress(client.street, client.number, client.neighborhood) }}
         </p>
-        <p class="text-xs text-gray-500">{{ client.phone }}</p>
+        <p class="text-xs text-gray-500">{{ $formatPhone(client.phone_prefix, client.phone) }}</p>
       </li>
     </ul>
     <ul
@@ -44,7 +44,6 @@
 
 <script>
 import ClientApi from "@/server/clients";
-import { ref } from "vue";
 
 export default {
   data() {
@@ -101,6 +100,22 @@ export default {
         this.clientNotFound = false;
         this.loadingSearch = false;
       }
+    },
+
+    getAddress(street, number, neighborhood) {
+      if (street && number && neighborhood) {
+        return `${street}, ${number} - ${neighborhood}`;
+      }
+
+      if (street && number) {
+        return `${street}, ${number}`;
+      }
+
+      if (street) {
+        return street;
+      }
+
+      return "";
     },
   },
 };

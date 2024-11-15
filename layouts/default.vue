@@ -3,7 +3,8 @@
     <input id="my-drawer-3" type="checkbox" class="drawer-toggle" />
     <div class="drawer-content flex flex-col">
       <!-- Navbar -->
-      <div class="navbar container mx-auto bg-base-100 w-full">
+      <!-- <div class="navbar container mx-auto bg-base-100 w-full"> -->
+      <div class="navbar px-4 bg-base-100 w-full">
         <div class="flex-none">
           <label
             for="my-drawer-3"
@@ -32,10 +33,10 @@
             <label class="grid cursor-pointer place-items-center">
               <input
                 type="checkbox"
-                value="dracula"
+                value="dim"
                 class="toggle theme-controller bg-base-content col-span-2 col-start-1 row-start-1"
                 @change="toggleTheme"
-                :checked="currentTheme === 'dracula'"
+                :checked="currentTheme === 'dim'"
               />
               <svg
                 class="stroke-base-100 fill-base-100 col-start-1 row-start-1"
@@ -80,7 +81,8 @@
         </div>
       </div>
       <!-- Page content here -->
-      <div class="container mx-auto">
+      <!-- <div class="container mx-auto"> -->
+      <div class="px-4">
         <div class="card bg-base-100 shadow-xl p-4">
           <NuxtPage />
         </div>
@@ -95,7 +97,7 @@
       <ul class="menu bg-base-200 min-h-full w-20 p-3 gap-2">
         <!-- Sidebar content here -->
          <li @click="redirectPage('/')">
-          <img class="py-1 px-2" src="../public/pizza.png" alt="">
+          <img class="py-0.5 px-2" src="../public/pizza.png" alt="">
          </li>
         <li>
           <div
@@ -128,6 +130,7 @@
             <Icon name="ic:outline-shopping-cart" class="w-6 h-6" />
           </div>
         </li>
+
         <li>
           <div
             class="tooltip tooltip-right"
@@ -149,6 +152,17 @@
             <Icon name="ic:outline-door-front" class="w-6 h-6" />
           </div>
         </li>
+
+        <li>
+          <div
+            class="tooltip tooltip-right"
+            :class="{ active: $route.path === '/tables' }"
+            data-tip="Mesas"
+            @click="redirectPage('/tables')"
+          >
+            <Icon name="ic:outline-table-bar" class="w-6 h-6" />
+          </div>
+        </li>
       </ul>
     </div>
   </div>
@@ -162,17 +176,17 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 // Define o tema como uma ref reativa tipada como string
-const currentTheme = ref<string>("cupcake");
+const currentTheme = ref<string>("pastel");
 
-// Função para alternar o tema entre 'cupcake' e 'dracula'
+// Função para alternar o tema entre 'pastel' e 'dim'
 const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === "dracula" ? "cupcake" : "dracula";
+  currentTheme.value = currentTheme.value === "dim" ? "pastel" : "dim";
   applyTheme();
 };
 
 // Função para carregar o tema do `localStorage` e aplicar no `<html>`
 const loadTheme = () => {
-  currentTheme.value = localStorage.getItem("theme") || "cupcake";
+  currentTheme.value = localStorage.getItem("theme") || "pastel";
   applyTheme();
 };
 
