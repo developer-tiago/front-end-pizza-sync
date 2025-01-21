@@ -1,17 +1,11 @@
 <template>
   <vue-tel-input
+    v-model="phone"
     v-bind="bindProps"
     mode="international"
     class="input-tel"
     @open="openDropdown"
   />
-  <!-- <vue-tel-input
-    v-bind="bindProps"
-    mode="international"
-    class="input input-bordered input-md input-tel ps-0"
-    @validate="checkEvent"
-    @open="openDropdown"
-  /> -->
 </template>
 
 <script>
@@ -69,16 +63,6 @@ export default {
   },
 
   methods: {
-    // checkEvent(event) {
-      // this.validation.phone = null;
-
-    //   if (event && event.valid === false) {
-    //     this.message.error.phone =
-    //       "Este formato de celular não é valido no país selecionado";
-    //     this.validation.phone = false;
-    //   }
-    // },
-
     openDropdown() {
       setTimeout(() => {
         const dropdownList = document.querySelector(".vti__dropdown-list");

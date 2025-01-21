@@ -1,3 +1,81 @@
+<script lang="ts" setup>
+import EnvironmentApi from "@/server/environments";
+import { defineEmits, defineProps, ref } from "vue";
+
+// Interfaces
+interface Form {
+  name: string;
+}
+
+interface Validation {
+  name: boolean;
+}
+
+interface Props {
+  openModal: boolean;
+}
+
+// Recebendo as props
+const openModal = defineProps<Props>();
+
+// Variáveis
+const validation = ref<Validation>({
+  name: false,
+});
+
+const form = ref<Form>({
+  name: "",
+});
+
+let busy: Ref<boolean> = ref(false);
+
+// DefineEmits
+const emit = defineEmits<{
+  (event: "created"): void;
+  (event: "close"): void;
+}>();
+
+// Função para emitir o evento created
+
+// Funções
+function checkForm(): boolean {
+  let checkFields = false;
+
+  if (!form.value.name) {
+    validation.value.name = true;
+    checkFields = true;
+  }
+
+  return checkFields;
+}
+
+async function createEnvironment(): Promise<void> {
+  try {
+    busy.value = true;
+
+    if (checkForm()) {
+      busy.value = false;
+      return;
+    }
+
+    await EnvironmentApi.store(form.value);
+
+    emit("created");
+    emit("close");
+  } catch (error: any) {
+    console.log(error);
+  } finally {
+    busy.value = false;
+  }
+}
+
+function handleOverlayClick(event: MouseEvent): void {
+  if (event.target instanceof HTMLElement && event.target.classList.contains("modal-overlay")) {
+    emit("close");
+  }
+}
+</script>
+
 <template>
   <div
     v-if="openModal"
@@ -41,66 +119,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import EnvironmentApi from "@/server/environments";
-
-export default {
-  props: {
-    openModal: {
-      type: Boolean,
-      required: true,
-    },
-  },
-
-  data() {
-    return {
-      form: {
-        name: "",
-      },
-      validation: {
-        name: false,
-      },
-      busy: false,
-    };
-  },
-
-  methods: {
-    handleOverlayClick(event) {
-      if (event.target.classList.contains("modal-overlay")) this.$emit("close");
-    },
-
-    createEnvironment() {
-      this.busy = true;
-
-      if (this.checkForm()) {
-        this.busy = false;
-        return;
-      }
-
-      EnvironmentApi.store(this.form)
-        .then(() => {
-          this.$emit("created");
-          this.$emit("close");
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.busy = false;
-        });
-    },
-
-    checkForm() {
-      let checkFields = false;
-
-      if (this.form.name === "") {
-        this.validation.name = true;
-        checkFields = true;
-      }
-
-      return checkFields;
-    },
-  },
-};
-</script>

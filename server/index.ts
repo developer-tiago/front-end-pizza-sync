@@ -7,4 +7,13 @@ const api = axios.create({
   },
 });
 
+// Adicionar o `account_id` dinamicamente em cada requisição
+api.interceptors.request.use((config) => {
+  const accountId = localStorage.getItem("account_id"); // ou Vuex/Pinia
+  if (accountId) {
+    config.headers["account_id"] = accountId;
+  }
+  return config;
+}, (error) => Promise.reject(error));
+
 export default api;

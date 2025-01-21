@@ -15,7 +15,7 @@ export default {
     require('daisyui'),
   ],
   daisyui: {
-    themes: ["pastel", "dim"],
+    themes: ["acid", "dim"],
   },
 }
 

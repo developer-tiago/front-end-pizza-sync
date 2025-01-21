@@ -1,3 +1,132 @@
+<script lang="ts" setup>
+import { onMounted, ref } from "vue";
+import ModalAddCategory from "./components/ModalAddCategory.vue";
+import ModalDelete from "@/components/ModalDelete.vue";
+import Pagination from "@/components/Pagination.vue";
+import AlertSuccess from "@/components/AlertSuccess.vue";
+import CategoryApi from "@/server/categories";
+
+// Interrfaces
+interface Modal {
+  create: boolean;
+  edit: boolean;
+  delete: boolean;
+}
+interface Category {
+  id: string;
+  account_id: string;
+  name: string;
+  description: string;
+  created_at: string;
+  updated: string;
+}
+
+interface Pagination {
+  total: number;
+  current_page: number;
+  last_page: number;
+  per_page: number;
+}
+
+interface Alert {
+  text: string;
+  show: boolean;
+  type: string
+}
+
+const modal = ref<Modal>({
+  create: false,
+  edit: false,
+  delete: false,
+});
+const pagination = ref<Pagination>({
+  total: 0,
+  current_page: 1,
+  last_page: 1,
+  per_page: 10,
+});
+const alert = ref<Alert>({
+  text: "",
+  show: false,
+  type: "success",
+});
+const categories = ref<Category[]>([]);
+const modalSelected: any = ref(null);
+const isLoading: Ref<boolean> = ref(true);
+const busy: Ref<boolean> = ref(false);
+
+// Funções
+async function loadCategories(): Promise<void> {
+  try {
+    busy.value = true;
+
+    const response = await CategoryApi.paginate(pagination.value.current_page)
+
+    if (response.data.data.length === 0 && pagination.value.current_page > 1) {
+      pagination.value.current_page--;
+      loadCategories();
+    }
+
+    categories.value = response.data.data;
+    pagination.value.total = response.data.total;
+    pagination.value.last_page = response.data.last_page;
+  } catch (error) {
+    console.log(error)
+  } finally {
+    isLoading.value = false;
+    busy.value = false;
+  }
+}
+
+function goToPage(page: number): void {
+  if (page >= 1 && page <= pagination.value.last_page) {
+    pagination.value.current_page = page;
+    loadCategories();
+  }
+}
+
+function categoryCreated() {
+  loadCategories();
+
+  alert.value.text = "Categoria adicionada com sucesso!";
+  alert.value.type = "success";
+  alert.value.show = true;
+}
+
+function openDeleteModal(category: Category): void {
+  modalSelected.value = {
+    title: "Excluir categoria",
+    confirmationQuestion: `Deseja realmente excluir a categoria <b>${category.name}</b>?`,
+    id: category.id,
+  };
+
+  modal.value.delete = true;
+}
+
+async function deleteCategory(id: string): Promise<void> {
+  try {
+    await CategoryApi.delete(id)
+
+    loadCategories();
+
+    modal.value.delete = false;
+
+    alert.value = {
+      text: "Categoria excluída com sucesso!",
+      type: "success",
+      show: true,
+    };
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// OnMounted
+onMounted(() => {
+  loadCategories();
+})
+</script>
+
 <template>
   <div v-if="isLoading" class="flex justify-center">
     <span class="loading loading-dots loading-lg text-center"></span>
@@ -78,119 +207,3 @@
     />
   </div>
 </template>
-
-<script>
-import ModalAddCategory from "./components/ModalAddCategory.vue";
-import ModalDelete from "@/components/ModalDelete.vue";
-import Pagination from "@/components/Pagination.vue";
-import AlertSuccess from "@/components/AlertSuccess.vue";
-import CategoryApi from "@/server/categories";
-
-export default {
-  components: {
-    ModalAddCategory,
-    ModalDelete,
-    Pagination,
-    AlertSuccess,
-  },
-
-  data() {
-    return {
-      isLoading: true,
-      busy: false,
-      modal: {
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      modalSelected: null,
-      categories: [],
-      pagination: {
-        total: 0,
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-      },
-      alert: {
-        text: "",
-        show: false,
-        type: "success",
-      },
-    };
-  },
-
-  async mounted() {
-    this.loadCategories();
-  },
-
-  methods: {
-    async loadCategories() {
-      this.busy = true;
-      await CategoryApi.paginate(this.pagination.current_page)
-        .then((response) => {
-          if (
-            response.data.data.length === 0 &&
-            this.pagination.current_page > 1
-          ) {
-            this.pagination.current_page--;
-            this.loadCategories();
-          }
-
-          this.categories = response.data.data;
-          this.pagination.total = response.data.total;
-          this.pagination.last_page = response.data.last_page;
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-          this.busy = false;
-        });
-    },
-
-    goToPage(page) {
-      if (page >= 1 && page <= this.pagination.last_page) {
-        this.pagination.current_page = page;
-        this.loadCategories();
-      }
-    },
-
-    categoryCreated() {
-      this.loadCategories();
-
-      this.alert.text = "Categoria adicionada com sucesso!";
-      this.alert.type = "success";
-      this.alert.show = true;
-    },
-
-    openDeleteModal(category) {
-      this.modalSelected = {
-        title: "Excluir categoria",
-        confirmationQuestion: `Deseja realmente excluir a categoria <b>${category.name}</b>?`,
-        id: category.id,
-      };
-
-      this.modal.delete = true;
-    },
-
-    async deleteCategory(id) {
-      await CategoryApi.delete(id)
-        .then(() => {
-          this.loadCategories();
-
-          this.modal.delete = false;
-
-          this.alert = {
-            text: "Categoria excluída com sucesso!",
-            type: "success",
-            show: true,
-          };
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-  },
-};
-</script>

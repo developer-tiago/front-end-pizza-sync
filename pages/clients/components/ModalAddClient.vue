@@ -38,12 +38,13 @@
           >Telefone
           <InputPhone
             id="phone"
-            v-model="form.phone"
-            :class="{ 'input-error': validation.phone }"
-            @input="validation.phone = false"
+            v-model="form.full_phone"
+            :class="{ 'input-error': validation.full_phone }"
+            @input="validation.full_phone = false"
+            @validate="validatePhoneAndPrefix"
           />
 
-          <small v-if="validation.phone" class="text-error"
+          <small v-if="validation.full_phone" class="text-error"
             >O campo 'Telefone' é inválido.</small
           >
         </label>
@@ -189,6 +190,7 @@ export default {
         email: "",
         phone_prefix: "",
         phone: "",
+        full_phone: "",
         street: "",
         number: "",
         neighborhood: "",
@@ -200,13 +202,24 @@ export default {
         name: false,
         email: false,
         phone_prefix: false,
-        phone: false,
+        full_phone: false,
         street: false,
         number: false,
       },
       busy: false,
       countries: [],
     };
+  },
+
+  watch: {
+    "form.full_phone"(value) {
+      if (this.form.phone_prefix) {
+        let phone = value
+        // Remover o prefixo e os espaços do número
+        phone = phone.replace(`+${this.form.phone_prefix}`, "").trim().replace(/\s+/g, "");
+        this.form.phone = phone
+      }
+    }
   },
 
   mounted() {
@@ -254,13 +267,35 @@ export default {
     checkForm() {
       let checkFields = false;
 
-      if (this.form.name === "") {
+      if (!this.form.name) {
         this.validation.name = true;
         checkFields = true;
       }
 
+      if (this.form.email.length > 0) {
+        const emailPattern =
+          /^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/;
+
+        if (!emailPattern.test(this.form.email)) {
+          this.validation.email = true;
+          checkFields = true;
+        }
+      }
+
       return checkFields;
     },
+
+    validatePhoneAndPrefix(payload) {
+      if (payload.valid) {
+        this.form.phone_prefix = payload.countryCallingCode
+      }
+    }
   },
 };
 </script>
+
+<style>
+.modal-open {
+  overflow: hidden;
+}
+</style>

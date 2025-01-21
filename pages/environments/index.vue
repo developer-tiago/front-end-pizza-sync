@@ -1,3 +1,130 @@
+<script lang="ts" setup>
+import { ref, onMounted } from "vue";
+import ModalAddEnvironment from "./components/ModalAddEnvironment.vue";
+import ModalDelete from "@/components/ModalDelete.vue";
+import Pagination from "@/components/Pagination.vue";
+import AlertSuccess from "@/components/AlertSuccess.vue";
+import EnvironmentApi from "@/server/environments";
+
+// Interfaces
+interface Modal {
+  create: boolean;
+  edit: boolean;
+  delete: boolean;
+}
+interface Pagination {
+  total: number;
+  current_page: number;
+  last_page: number;
+  per_page: number;
+}
+interface Alert {
+  text: string;
+  show: boolean;
+  type: string;
+}
+interface Environment {
+  id: string;
+  account_id: string;
+  name: string;
+  created_at: string
+}
+
+// Variáveis
+const modal = ref<Modal>({
+  create: false,
+  edit: false,
+  delete: false,
+});
+const pagination = ref<Pagination>({
+  total: 0,
+  current_page: 1,
+  last_page: 1,
+  per_page: 10,
+});
+const alert = ref<Alert>({
+  text: "",
+  show: false,
+  type: "success",
+});
+const modalSelected: any = ref(null)
+const environments = ref<Environment[]>([]);
+const isLoading: Ref<boolean> = ref(true);
+const busy: Ref<boolean> = ref(false);
+
+// Funções
+async function loadEnvironments(): Promise<void> {
+  try {
+    busy.value = true;
+
+    const response = await EnvironmentApi.paginate(pagination.value.current_page)
+
+    if (response.data.data.length === 0 && pagination.value.current_page > 1) {
+      pagination.value.current_page--
+      loadEnvironments()
+    }
+
+    environments.value = response.data.data;
+    pagination.value.total = response.data.total;
+    pagination.value.last_page = response.data.last_page;
+
+  } catch (error: any) {
+    console.log(error)
+  } finally {
+    isLoading.value = false;
+    busy.value = false
+  }
+}
+
+function goToPage(page: number): void {
+  if (page >= 1 && page <= pagination.value.last_page) {
+    pagination.value.current_page = page;
+    loadEnvironments();
+  }
+}
+
+function environmentCreated(): void {
+  loadEnvironments();
+
+  alert.value.text = "Ambiente adicionado com sucesso!";
+  alert.value.type = "success";
+  alert.value.show = true;
+}
+
+function openDeleteModal(environment: Environment): void {
+  modalSelected.value = {
+    title: "Excluir ambiente",
+    confirmationQuestion: `Deseja realmente excluir o ambiente <b>${environment.name}</b>?`,
+    id: environment.id,
+  };
+
+  modal.value.delete = true;
+}
+
+async function deleteEnvironment(id: string): Promise<void> {
+  try {
+    await EnvironmentApi.delete(id)
+
+    loadEnvironments();
+
+    modal.value.delete = false;
+
+    alert.value = {
+      text: "Ambiente excluído com sucesso!",
+      type: "success",
+      show: true,
+    };
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+// OnMounted
+onMounted(() => {
+  loadEnvironments();
+})
+</script>
+
 <template>
   <div v-if="isLoading" class="flex justify-center">
     <span class="loading loading-dots loading-lg text-center"></span>
@@ -73,119 +200,3 @@
     />
   </div>
 </template>
-
-<script>
-import ModalAddEnvironment from "./components/ModalAddEnvironment.vue";
-import ModalDelete from "@/components/ModalDelete.vue";
-import Pagination from "@/components/Pagination.vue";
-import AlertSuccess from "@/components/AlertSuccess.vue";
-import EnvironmentApi from "@/server/environments";
-
-export default {
-  components: {
-    ModalAddEnvironment,
-    ModalDelete,
-    Pagination,
-    AlertSuccess,
-  },
-
-  data() {
-    return {
-      isLoading: true,
-      busy: false,
-      modal: {
-        create: false,
-        edit: false,
-        delete: false,
-      },
-      modalSelected: null,
-      environments: [],
-      pagination: {
-        total: 0,
-        current_page: 1,
-        last_page: 1,
-        per_page: 10,
-      },
-      alert: {
-        text: "",
-        show: false,
-        type: "success",
-      },
-    };
-  },
-
-  async mounted() {
-    this.loadEnvironments();
-  },
-
-  methods: {
-    async loadEnvironments() {
-      this.busy = true;
-      await EnvironmentApi.paginate(this.pagination.current_page)
-        .then((response) => {
-          if (
-            response.data.data.length === 0 &&
-            this.pagination.current_page > 1
-          ) {
-            this.pagination.current_page--;
-            this.loadEnvironments();
-          }
-
-          this.environments = response.data.data;
-          this.pagination.total = response.data.total;
-          this.pagination.last_page = response.data.last_page;
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.isLoading = false;
-          this.busy = false;
-        });
-    },
-
-    goToPage(page) {
-      if (page >= 1 && page <= this.pagination.last_page) {
-        this.pagination.current_page = page;
-        this.loadEnvironments();
-      }
-    },
-
-    environmentCreated() {
-      this.loadEnvironments();
-
-      this.alert.text = "Ambiente adicionado com sucesso!";
-      this.alert.type = "success";
-      this.alert.show = true;
-    },
-
-    openDeleteModal(environment) {
-      this.modalSelected = {
-        title: "Excluir ambiente",
-        confirmationQuestion: `Deseja realmente excluir o ambiente <b>${environment.name}</b>?`,
-        id: environment.id,
-      };
-
-      this.modal.delete = true;
-    },
-
-    async deleteEnvironment(id) {
-      await EnvironmentApi.delete(id)
-        .then(() => {
-          this.loadEnvironments();
-
-          this.modal.delete = false;
-
-          this.alert = {
-            text: "Ambiente excluído com sucesso!",
-            type: "success",
-            show: true,
-          };
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    },
-  },
-};
-</script>

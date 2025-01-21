@@ -26,6 +26,18 @@
   </div>
 </template>
 
-<script setup>
-// Este componente também não necessita de script específico
+<!-- <script>
+export default {
+  data () {},
+
+  mounted() {
+    console.log('home')
+    localStorage.setItem('account_id', '479ee3b6-717d-497e-abd2-e149c3dff3f0')
+  }
+}
+</script> -->
+<script setup lang="ts">
+useSeoMeta({
+  ogImage: '/og-image.png'
+})
 </script>

@@ -11,4 +11,11 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@nuxt/icon'],
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/png', href: '/favicon.png', sizes: '32x32' } // Ajuste o tamanho se necessário
+      ]
+    }
+  }
 });

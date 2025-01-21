@@ -96,8 +96,8 @@
       ></label>
       <ul class="menu bg-base-200 min-h-full w-20 p-3 gap-2">
         <!-- Sidebar content here -->
-         <li @click="redirectPage('/')">
-          <img class="py-0.5 px-2" src="../public/pizza.png" alt="">
+         <li class="hover:bg-transparent" @click="redirectPage('/')">
+          <img class="py-0.5 px-2 hover:bg-transparent" src="../public/pizza.png" alt="">
          </li>
         <li>
           <div
@@ -156,9 +156,9 @@
         <li>
           <div
             class="tooltip tooltip-right"
-            :class="{ active: $route.path === '/tables' }"
+            :class="{ active: $route.path === '/seatings' }"
             data-tip="Mesas"
-            @click="redirectPage('/tables')"
+            @click="redirectPage('/seatings')"
           >
             <Icon name="ic:outline-table-bar" class="w-6 h-6" />
           </div>
@@ -176,17 +176,17 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 // Define o tema como uma ref reativa tipada como string
-const currentTheme = ref<string>("pastel");
+const currentTheme = ref<string>("acid");
 
-// Função para alternar o tema entre 'pastel' e 'dim'
+// Função para alternar o tema entre 'acid' e 'dim'
 const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === "dim" ? "pastel" : "dim";
+  currentTheme.value = currentTheme.value === "dim" ? "acid" : "dim";
   applyTheme();
 };
 
 // Função para carregar o tema do `localStorage` e aplicar no `<html>`
 const loadTheme = () => {
-  currentTheme.value = localStorage.getItem("theme") || "pastel";
+  currentTheme.value = localStorage.getItem("theme") || "acid";
   applyTheme();
 };
 
