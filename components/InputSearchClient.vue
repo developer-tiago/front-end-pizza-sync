@@ -1,3 +1,88 @@
+<script setup lang="ts">
+import ClientApi from "@/server/clients";
+import { onBeforeUnmount, onMounted, ref } from "vue";
+import { useRouter } from 'vue-router'
+
+interface Client {
+  id: string,
+  name: string,
+  street: string,
+  number: string,
+  neighborhood: string,
+  phone_prefix: string,
+  phone: string
+}
+
+const search = ref<string>("");
+const clients = ref<Client[]>([]);
+const clientNotFound = ref<Boolean>(false);
+const loadingSearch = ref<Boolean>(false);
+const inputSearch = ref<HTMLDivElement | null>(null)
+const router = useRouter()
+
+function handleClickOutside(event: MouseEvent) {
+  if (inputSearch.value && !inputSearch.value.contains(event.target as Node)) {
+    clients.value = []
+    clientNotFound.value = false
+    loadingSearch.value = false
+  }
+}
+
+async function searchClient() {
+  clients.value = [];
+  clientNotFound.value = false;
+  loadingSearch.value = true;
+
+  await ClientApi.seachClient(search.value)
+    .then((response) => {
+      if (response.data.length === 0) {
+        clientNotFound.value = true;
+      } else {
+        clients.value = response.data;
+      }
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      loadingSearch.value = false;
+    });
+}
+
+function redirectClient(id: string) {
+  router.push(`/clients/edit/${id}`);
+
+  search.value = "";
+  clients.value = [];
+  clientNotFound.value = false;
+  loadingSearch.value = false;
+}
+
+function getAddress(street: string, number: string, neighborhood: string) {
+  if (street && number && neighborhood) {
+    return `${street}, ${number} - ${neighborhood}`;
+  }
+
+  if (street && number) {
+    return `${street}, ${number}`;
+  }
+
+  if (street) {
+    return street;
+  }
+
+  return "";
+}
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+</script>
+
 <template>
   <div ref="inputSearch" class="ms-2 relative max-w-72 w-full">
     <input
@@ -22,7 +107,9 @@
         <p class="text-xs text-gray-500">
           {{ getAddress(client.street, client.number, client.neighborhood) }}
         </p>
-        <p class="text-xs text-gray-500">{{ $formatPhone(client.phone_prefix, client.phone) }}</p>
+        <p class="text-xs text-gray-500">
+          {{ $formatPhone(client.phone_prefix, client.phone) }}
+        </p>
       </li>
     </ul>
     <ul
@@ -41,85 +128,6 @@
     </ul>
   </div>
 </template>
-
-<script>
-import ClientApi from "@/server/clients";
-
-export default {
-  data() {
-    return {
-      search: "",
-      clients: [],
-      clientNotFound: false,
-      loadingSearch: false,
-    };
-  },
-
-  mounted() {
-    document.addEventListener("click", this.handleClickOutside);
-  },
-
-  beforeUnmount() {
-    document.removeEventListener("click", this.handleClickOutside);
-  },
-
-  methods: {
-    async searchClient() {
-      this.clients = [];
-      this.clientNotFound = false;
-      this.loadingSearch = true;
-      await ClientApi.seachClient(this.search)
-        .then((response) => {
-          if (response.data.length === 0) {
-            this.clientNotFound = true;
-          } else {
-            this.clients = response.data;
-          }
-        })
-        .catch((error) => {
-          console.log(error);
-        })
-        .finally(() => {
-          this.loadingSearch = false;
-        });
-    },
-
-    redirectClient(id) {
-      this.$router.push(`/clients/${id}`);
-
-      this.search = "";
-      this.clients = [];
-      this.clientNotFound = false;
-      this.loadingSearch = false;
-    },
-
-    handleClickOutside(event) {
-      const inputSearch = this.$refs.inputSearch;
-      if (inputSearch && !inputSearch.contains(event.target)) {
-        this.clients = [];
-        this.clientNotFound = false;
-        this.loadingSearch = false;
-      }
-    },
-
-    getAddress(street, number, neighborhood) {
-      if (street && number && neighborhood) {
-        return `${street}, ${number} - ${neighborhood}`;
-      }
-
-      if (street && number) {
-        return `${street}, ${number}`;
-      }
-
-      if (street) {
-        return street;
-      }
-
-      return "";
-    },
-  },
-};
-</script>
 
 <style scoped>
 /* Estilos para a barra de rolagem */

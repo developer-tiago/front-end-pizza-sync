@@ -1,3 +1,30 @@
+<script setup lang="ts">
+import { defineEmits ,defineProps } from "vue";
+
+const props = defineProps({
+  openModal: {
+    type: Boolean,
+    required: true,
+  },
+  content: {
+    type: Object,
+    required: true,
+  },
+});
+const emit = defineEmits<{
+  (event: "close"): void;
+  (event: 'callBack', id: string): void;
+}>();
+
+function handleOverlayClick(event: MouseEvent) {
+  if ((event.target as HTMLElement).classList.contains("modal-overlay")) emit("close");
+}
+
+function callBack() {
+  emit("callBack", props.content.id);
+}
+</script>
+
 <template>
   <div
     v-if="openModal"
@@ -13,7 +40,7 @@
 
       <!-- FOOTER -->
       <div class="flex justify-end gap-4">
-        <button class="btn btn-outline btn-error" @click="$emit('close')">
+        <button class="btn btn-outline btn-error" @click="emit('close')">
           Cancelar
         </button>
         <button class="btn btn-outline btn-success" @click="callBack()">
@@ -23,37 +50,3 @@
     </div>
   </div>
 </template>
-
-<script>
-export default {
-  props: {
-    openModal: {
-      type: Boolean,
-      required: true,
-    },
-    content: {
-      type: Object,
-      required: true,
-    },
-  },
-
-  data() {
-    return {
-      form: {
-        name: "",
-        description: "",
-      },
-    };
-  },
-
-  methods: {
-    handleOverlayClick(event) {
-      if (event.target.classList.contains("modal-overlay")) this.$emit("close");
-    },
-
-    callBack() {
-      this.$emit("callBack", this.content.id);
-    },
-  },
-};
-</script>

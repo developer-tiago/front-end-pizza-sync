@@ -18,7 +18,7 @@ interface Category {
   name: string;
   description: string;
   created_at: string;
-  updated: string;
+  updated_at: string;
 }
 
 interface Pagination {
@@ -31,7 +31,7 @@ interface Pagination {
 interface Alert {
   text: string;
   show: boolean;
-  type: string
+  type: string;
 }
 
 const modal = ref<Modal>({
@@ -60,7 +60,7 @@ async function loadCategories(): Promise<void> {
   try {
     busy.value = true;
 
-    const response = await CategoryApi.paginate(pagination.value.current_page)
+    const response = await CategoryApi.paginate(pagination.value.current_page);
 
     if (response.data.data.length === 0 && pagination.value.current_page > 1) {
       pagination.value.current_page--;
@@ -71,7 +71,7 @@ async function loadCategories(): Promise<void> {
     pagination.value.total = response.data.total;
     pagination.value.last_page = response.data.last_page;
   } catch (error) {
-    console.log(error)
+    console.log(error);
   } finally {
     isLoading.value = false;
     busy.value = false;
@@ -105,7 +105,7 @@ function openDeleteModal(category: Category): void {
 
 async function deleteCategory(id: string): Promise<void> {
   try {
-    await CategoryApi.delete(id)
+    await CategoryApi.delete(id);
 
     loadCategories();
 
@@ -117,19 +117,19 @@ async function deleteCategory(id: string): Promise<void> {
       show: true,
     };
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 }
 
 // OnMounted
 onMounted(() => {
   loadCategories();
-})
+});
 </script>
 
 <template>
   <div v-if="isLoading" class="flex justify-center">
-    <span class="loading loading-dots loading-lg text-center"></span>
+    <span class="loading loading-infinity loading-lg text-center"></span>
   </div>
   <div v-else>
     <div class="flex justify-between items-center mb-4">
@@ -143,29 +143,32 @@ onMounted(() => {
       <thead>
         <tr>
           <th>Name</th>
-          <th>Descrição</th>
-          <th></th>
+          <th class="w-1 whitespace-nowrap"></th>
         </tr>
       </thead>
       <tbody v-if="categories.length > 0">
         <tr v-for="category in categories" :key="category.id">
           <td>{{ category.name }}</td>
-          <td>
-            <span v-if="category.description">{{ category.description }}</span>
-            <span v-else>---</span>
-          </td>
-          <td>
-            <div class="flex justify-end gap-2">
-              <button class="btn btn-square btn-outline btn-xs">
-                <Icon name="ic:twotone-edit" />
-              </button>
-              <button
-                class="btn btn-square btn-outline btn-xs"
-                @click="openDeleteModal(category)"
-              >
-                <Icon name="ic:twotone-delete" />
-              </button>
-            </div>
+          <td class="flex gap-2">
+            <button
+              class="btn btn-square btn-outline btn-xs tooltip"
+              data-tip="Descrição"
+            >
+              <Icon name="ic:outline-description" />
+            </button>
+            <button
+              class="btn btn-square btn-outline btn-xs tooltip"
+              data-tip="Editar"
+            >
+              <Icon name="ic:twotone-edit" />
+            </button>
+            <button
+              class="btn btn-square btn-outline btn-xs tooltip"
+              data-tip="Remover"
+              @click="openDeleteModal(category)"
+            >
+              <Icon name="ic:twotone-delete" />
+            </button>
           </td>
         </tr>
       </tbody>

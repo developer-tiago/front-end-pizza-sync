@@ -15,7 +15,7 @@
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              class="inline-block h-6 w-6 stroke-current"
+              class="inline-block size-5 stroke-current"
             >
               <path
                 stroke-linecap="round"
@@ -83,84 +83,84 @@
       <!-- Page content here -->
       <!-- <div class="container mx-auto"> -->
       <div class="px-4">
-        <div class="card bg-base-100 shadow-xl p-4">
+        <div class="card bg-base-100 shadow-2xl p-4">
           <NuxtPage />
         </div>
       </div>
     </div>
-    <div class="drawer-side">
+    <div class="drawer-side z-50">
       <label
         for="my-drawer-3"
         aria-label="close sidebar"
         class="drawer-overlay"
       ></label>
-      <ul class="menu bg-base-200 min-h-full w-20 p-3 gap-2">
+      <ul class="menu bg-base-200 min-h-full w-16 gap-2">
         <!-- Sidebar content here -->
-         <li class="hover:bg-transparent" @click="redirectPage('/')">
+        <!-- <li class="hover:bg-transparent" @click="redirectPage('/')">
           <img class="py-0.5 px-2 hover:bg-transparent" src="../public/pizza.png" alt="">
-         </li>
+         </li> -->
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0 flex items-center justify-center"
             :class="{ active: $route.path === '/' }"
             data-tip="Home"
             @click="redirectPage('/')"
           >
-            <Icon name="ic:outline-home" class="w-6 h-6" />
+            <Icon name="ic:outline-home" class="size-5" />
           </div>
         </li>
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0  flex items-center justify-center"
             :class="{ active: $route.path === '/clients' }"
             data-tip="Clientes"
             @click="redirectPage('/clients')"
           >
-            <Icon name="ic:outline-person" class="w-6 h-6" />
+            <Icon name="ic:outline-person" class="size-5" />
           </div>
         </li>
 
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0  flex items-center justify-center"
             :class="{ active: $route.path === '/products' }"
             data-tip="Produtos"
             @click="redirectPage('/products')"
           >
-            <Icon name="ic:outline-shopping-cart" class="w-6 h-6" />
+            <Icon name="ic:outline-shopping-cart" class="size-5" />
           </div>
         </li>
 
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0  flex items-center justify-center"
             :class="{ active: $route.path === '/categories' }"
             data-tip="Categorias"
             @click="redirectPage('/categories')"
           >
-            <Icon name="ic:outline-category" class="w-6 h-6" />
+            <Icon name="ic:outline-category" class="size-5" />
           </div>
         </li>
 
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0  flex items-center justify-center"
             :class="{ active: $route.path === '/environments' }"
             data-tip="Ambientes"
             @click="redirectPage('/environments')"
           >
-            <Icon name="ic:outline-door-front" class="w-6 h-6" />
+            <Icon name="ic:outline-door-front" class="size-5" />
           </div>
         </li>
 
         <li>
           <div
-            class="tooltip tooltip-right"
+            class="tooltip tooltip-right px-0  flex items-center justify-center"
             :class="{ active: $route.path === '/seatings' }"
             data-tip="Mesas"
             @click="redirectPage('/seatings')"
           >
-            <Icon name="ic:outline-table-bar" class="w-6 h-6" />
+            <Icon name="ic:outline-table-bar" class="size-5" />
           </div>
         </li>
       </ul>
@@ -176,17 +176,17 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 // Define o tema como uma ref reativa tipada como string
-const currentTheme = ref<string>("acid");
+const currentTheme = ref<string>("fantasy");
 
-// Função para alternar o tema entre 'acid' e 'dim'
+// Função para alternar o tema entre 'fantasy' e 'dim'
 const toggleTheme = () => {
-  currentTheme.value = currentTheme.value === "dim" ? "acid" : "dim";
+  currentTheme.value = currentTheme.value === "dim" ? "fantasy" : "dim";
   applyTheme();
 };
 
 // Função para carregar o tema do `localStorage` e aplicar no `<html>`
 const loadTheme = () => {
-  currentTheme.value = localStorage.getItem("theme") || "acid";
+  currentTheme.value = localStorage.getItem("theme") || "fantasy";
   applyTheme();
 };
 

@@ -1,6 +1,6 @@
 <template>
   <div v-if="isLoading" class="flex justify-center">
-    <span class="loading loading-dots loading-lg text-center"></span>
+    <span class="loading loading-infinity loading-lg text-center"></span>
   </div>
   <div v-else>
     <div class="flex justify-between items-center mb-4">
@@ -27,14 +27,14 @@
           <td>{{ getPhone(client.phone) }}</td>
           <td>
             <div class="flex justify-end gap-2">
-              <button
-                class="btn btn-square btn-outline btn-xs"
-                @click="editClient(client)"
+              <NuxtLink
+                class="btn btn-square btn-outline btn-xs tooltip flex justify-center" data-tip="Editar"
+                :to="'/clients/edit/' + client.id"
               >
                 <Icon name="ic:twotone-edit" />
-              </button>
+              </NuxtLink>
               <button
-                class="btn btn-square btn-outline btn-xs"
+                class="btn btn-square btn-outline btn-xs tooltip" data-tip="Remover"
                 @click="openDeleteModal(client)"
               >
                 <Icon name="ic:twotone-delete" />

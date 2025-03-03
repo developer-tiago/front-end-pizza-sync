@@ -1,6 +1,6 @@
 <template>
   <div v-if="isLoading" class="flex justify-center">
-    <span class="loading loading-dots loading-lg text-center"></span>
+    <span class="loading loading-infinity loading-lg text-center"></span>
   </div>
   <div v-else>
     <div class="flex justify-between items-center mb-4">
@@ -10,14 +10,13 @@
       </button>
     </div>
 
-    <table  class="table table-lg mb-4">
+    <table class="table table-lg mb-4">
       <thead>
         <tr>
           <th class="w-1 whitespace-nowrap">Código</th>
           <th>Name</th>
           <th class="w-1 whitespace-nowrap">Preço</th>
           <th>Categoria</th>
-          <th class="w-1 whitespace-nowrap">Descrição</th>
           <th class="w-1 whitespace-nowrap"></th>
         </tr>
       </thead>
@@ -29,31 +28,35 @@
           <td>
             {{ product.category.name }}
           </td>
-          <td>
-            <div class="flex justify-center">
-              <button class="btn btn-square btn-outline btn-xs">
-                <Icon name="ic:outline-description" />
-              </button>
-            </div>
-          </td>
-          <td>
-            <div class="flex gap-2">
-              <button class="btn btn-square btn-outline btn-xs">
-                <Icon name="ic:twotone-edit" />
-              </button>
-              <button
-                class="btn btn-square btn-outline btn-xs"
-                @click="openDeleteModal(product)"
-              >
-                <Icon name="ic:twotone-delete" />
-              </button>
-            </div>
+          <td class="flex gap-2">
+            <button
+              class="btn btn-square btn-outline btn-xs tooltip"
+              data-tip="Descrição"
+            >
+              <Icon name="ic:outline-description" />
+            </button>
+            <NuxtLink
+              class="btn btn-square btn-outline btn-xs tooltip flex justify-center"
+              data-tip="Editar"
+              :to="'products/edit/' + product.id"
+            >
+              <Icon name="ic:twotone-edit" />
+            </NuxtLink>
+            <button
+              class="btn btn-square btn-outline btn-xs tooltip"
+              data-tip="Remover"
+              @click="openDeleteModal(product)"
+            >
+              <Icon name="ic:twotone-delete" />
+            </button>
           </td>
         </tr>
       </tbody>
       <tbody v-else>
         <tr>
-          <td colspan="100%" class="text-center py-8">Nenhum produto encontrado</td>
+          <td colspan="100%" class="text-center py-8">
+            Nenhum produto encontrado
+          </td>
         </tr>
       </tbody>
     </table>
@@ -190,7 +193,7 @@ export default {
           this.loadProducts();
 
           this.modal.delete = false;
-          
+
           this.alert = {
             text: "Produto excluído com sucesso!",
             type: "success",

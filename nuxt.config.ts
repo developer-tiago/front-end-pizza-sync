@@ -1,4 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import { defineNuxtConfig } from 'nuxt/config';
+import path from 'path';
+
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: false },
@@ -11,6 +14,9 @@ export default defineNuxtConfig({
     },
   },
   modules: ['@nuxt/icon'],
+  alias: {
+    '@': path.resolve(__dirname, './')
+  },
   app: {
     head: {
       link: [

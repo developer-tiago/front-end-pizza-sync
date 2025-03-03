@@ -127,7 +127,7 @@ onMounted(() => {
 
 <template>
   <div v-if="isLoading" class="flex justify-center">
-    <span class="loading loading-dots loading-lg text-center"></span>
+    <span class="loading loading-infinity loading-lg text-center"></span>
   </div>
   <div v-else>
     <div class="flex justify-between items-center mb-4">

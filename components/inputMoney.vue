@@ -1,7 +1,3 @@
-<template>
-  <money3 class="input input-bordered input-md" v-bind="config"></money3>
-</template>
-
 <script>
   import { Money3Component } from 'v-money3'
 
@@ -29,3 +25,7 @@
     }
   }
 </script>
+
+<template>
+  <money3 class="input input-bordered input-md" v-bind="config"></money3>
+</template>
